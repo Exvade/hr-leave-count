@@ -23,7 +23,15 @@ Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** me
 ## 4. Aturan Standar Kode & Git
 - Kode harus mematuhi konfigurasi **Laravel Pint** yang telah ditetapkan di `pint.json`.
 - Jangan mencoba untuk melangkahi *Git Hooks* (Husky) yang akan merapikan kode sebelum *commit*.
-- **Pesan Commit:** Wajib menggunakan *Conventional Commits* seperti `feat: ...`, `fix: ...`, `refactor: ...`, `style: ...`.
+
+## 5. Standar Git & Commit
+- Gunakan *Conventional Commits* (`feat:`, `fix:`, `docs:`, dll).
+- Pesan *commit* harus menggunakan Bahasa Indonesia yang jelas.
+- DILARANG menggunakan perintah `--no-verify` saat melakukan commit.
+
+## 6. Kerapian Kode & Format (Penting untuk AI)
+- **WAJIB JALANKAN PINT:** Jika Anda (AI Assistant) selesai membuat atau memodifikasi file PHP apa pun, Anda **WAJIB** mengeksekusi perintah `./vendor/bin/pint` di terminal sebelum menyelesaikan *task* atau sebelum Anda melakukan *commit*. 
+- CI/CD MWT sangat ketat. Jangan biarkan kode dengan *unused imports*, spasi berantakan, atau *syntax* yang tidak standar masuk ke GitHub!
 
 ---
 

@@ -22,9 +22,10 @@
         "concat_space": {
             "spacing": "one"
         },
+        "class_attributes_separation": false,
         "declare_equal_normalize": true,
         "function_typehint_space": true,
-        "single_trait_insert_per_statement": true,
+        "single_trait_insert_per_statement": false,
         "trailing_comma_in_multiline": true
     }
 }

@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
         Blueprint::macro('mwtTimestamps', function () {
             /** @var Blueprint $this */
             $this->timestamps();
-            $this->unsignedBigInteger('created_by')->nullable();
-            $this->unsignedBigInteger('updated_by')->nullable();
+            $this->uuid('created_by')->nullable();
+            $this->uuid('updated_by')->nullable();
         });
     }
 }

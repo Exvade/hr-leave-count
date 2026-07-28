@@ -28,16 +28,14 @@ git add .
 git commit -m "Initial commit from MWT Starter Kit"
 
 # 5. Install dependensi
-composer install
-npm install
+composer install && npm install
 
 # 6. Copy .env dan generate key
 cp .env.example .env
 php artisan key:generate
 
-# 7. Jalankan server
-php artisan serve
-npm run dev
+# 7. Jalankan server (Backend & Frontend sekaligus)
+composer run dev
 ```
 
 ## Penggunaan Komponen Dasar

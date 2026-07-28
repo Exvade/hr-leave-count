@@ -14,7 +14,7 @@ Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** me
 - **Migrasi:** DILARANG menggunakan `$table->timestamps()`. WAJIB gunakan `$table->mwtTimestamps()` (yang akan membuat `created_at`, `updated_at`, `created_by`, `updated_by`).
 - **UUID & SoftDeletes:** Gunakan UUID (`$table->uuid('id')->primary()`) untuk data publik/sensitif. WAJIB tambahkan `$table->softDeletes()` untuk tabel data utama.
 - **Traceability:** Jangan isi `created_by` atau `updated_by` secara manual di Controller. Biarkan `BaseModel` yang mengurusnya secara otomatis via Model Events.
-- **Model:** Semua model wajib meng-*extend* `App\Models\BaseModel`, bukan Model bawaan Laravel, karena aturan `$guarded = []` sudah ditetapkan di sana.
+- **Model:** Semua model wajib meng-*extend* `App\Models\BaseModel`, bukan Model bawaan Laravel, karena aturan `$guarded = []` sudah ditetapkan di sana. *(Kecuali: Model otentikasi seperti `User` tetap meng-extend `Authenticatable` bawaan Laravel)*.
 
 ## 3. Aturan Error Handling & API
 - **Try-Catch & Transaksi:** Seluruh logika *database* yang kompleks di Controller WAJIB dibungkus menggunakan `DB::beginTransaction()`, `try {} catch() {}`, dan `DB::rollBack()`.

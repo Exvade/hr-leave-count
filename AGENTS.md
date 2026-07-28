@@ -1,3 +1,32 @@
+# Aturan Khusus MWT Starter Kit (Wajib Dibaca AI)
+
+Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** mematuhi aturan spesifik perusahaan berikut ini sebelum membuat atau memodifikasi kode:
+
+## 1. Aturan UI / Frontend
+- **Komponen UI MWT:** Gunakan komponen bawaan seperti `<x-button>`, `<x-input>`, `<x-card>`, dan `<x-alert>`. Dilarang keras membuat elemen `<button>` atau `<div>` bergaya sendiri jika komponennya sudah ada.
+- **Notifikasi:** Gunakan *SweetAlert2* (`return back()->with('success', '...')` dari Controller).
+- **Emote/Icon:** Dilarang menggunakan emoji *keyboard* di antarmuka web (seperti 🚀, ✅). WAJIB gunakan ikon SVG (seperti Heroicons).
+- **Responsive:** Setiap antarmuka yang dibuat wajib *responsive* di segala ukuran layar.
+- **Copywriting:** Sistem internal WAJIB berbahasa Indonesia baku. Gunakan istilah `Tambah`, `Simpan`, `Ubah`, `Hapus` (JANGAN gunakan *Create*, *Submit*, *Update*, *Delete*).
+
+## 2. Aturan Database & Model
+- **Penamaan Tabel:** Wajib menggunakan Bahasa Inggris, *Plural*, dan *snake_case* (contoh: `employee_salaries`).
+- **Migrasi:** DILARANG menggunakan `$table->timestamps()`. WAJIB gunakan `$table->mwtTimestamps()` (yang akan membuat `created_at`, `updated_at`, `created_by`, `updated_by`).
+- **UUID & SoftDeletes:** Gunakan UUID (`$table->uuid('id')->primary()`) untuk data publik/sensitif. WAJIB tambahkan `$table->softDeletes()` untuk tabel data utama.
+- **Traceability:** Jangan isi `created_by` atau `updated_by` secara manual di Controller. Biarkan `BaseModel` yang mengurusnya secara otomatis via Model Events.
+- **Model:** Semua model wajib meng-*extend* `App\Models\BaseModel`, bukan Model bawaan Laravel, karena aturan `$guarded = []` sudah ditetapkan di sana.
+
+## 3. Aturan Error Handling & API
+- **Try-Catch & Transaksi:** Seluruh logika *database* yang kompleks di Controller WAJIB dibungkus menggunakan `DB::beginTransaction()`, `try {} catch() {}`, dan `DB::rollBack()`.
+- **Response API:** Setiap *endpoint* API (JSON) wajib mengembalikan format baku: `{ success: bool, message: string, data: any|null, errors: object|null }`.
+
+## 4. Aturan Standar Kode & Git
+- Kode harus mematuhi konfigurasi **Laravel Pint** yang telah ditetapkan di `pint.json`.
+- Jangan mencoba untuk melangkahi *Git Hooks* (Husky) yang akan merapikan kode sebelum *commit*.
+- **Pesan Commit:** Wajib menggunakan *Conventional Commits* seperti `feat: ...`, `fix: ...`, `refactor: ...`, `style: ...`.
+
+---
+
 <laravel-boost-guidelines>
 === foundation rules ===
 

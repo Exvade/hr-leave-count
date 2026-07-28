@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - {{ config('app.name', 'MWT Portal') }}</title>
+    <link rel="icon" type="image/webp" href="{{ asset('assets/images/logo/logo-square.webp') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -18,10 +19,7 @@
 <body class="bg-gray-50 text-gray-900 antialiased min-h-screen flex items-center justify-center p-6">
     <div class="max-w-xl w-full text-center">
         <div class="mb-8 flex justify-center">
-            <!-- MWT Branding placeholder or logo -->
-            <div class="w-16 h-16 bg-brand-dark rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg">
-                MWT
-            </div>
+            <img src="{{ asset('assets/images/logo/logo-square.webp') }}" alt="MWT Logo" class="w-16 h-16 rounded-2xl shadow-sm">
         </div>
         
         <h1 class="text-7xl md:text-9xl font-heading font-extrabold text-gray-200 mb-4 tracking-tighter">

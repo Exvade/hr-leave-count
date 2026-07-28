@@ -3,6 +3,7 @@
 @section('title', 'MWT Starter Kit')
 
 @section('content')
+
     <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
         <!-- Navbar / Header -->
         <header

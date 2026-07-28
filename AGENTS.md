@@ -2,12 +2,13 @@
 
 Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** mematuhi aturan spesifik perusahaan berikut ini sebelum membuat atau memodifikasi kode:
 
-## 1. Aturan UI / Frontend
-- **Komponen UI MWT:** Gunakan komponen bawaan seperti `<x-button>`, `<x-input>`, `<x-card>`, dan `<x-alert>`. Dilarang keras membuat elemen `<button>` atau `<div>` bergaya sendiri jika komponennya sudah ada.
-- **Notifikasi:** Gunakan *SweetAlert2* (`return back()->with('success', '...')` dari Controller).
-- **Emote/Icon:** Dilarang menggunakan emoji *keyboard* di antarmuka web (seperti 🚀, ✅). WAJIB gunakan ikon SVG (seperti Heroicons).
+## 1. Aturan UI/UX & Frontend (SANGAT PENTING UNTUK AI)
+- **Komponen Wajib:** Selalu gunakan komponen bawaan Blade yang ada di `resources/views/components/` (contoh: `<x-button>`, `<x-input>`, `<x-select>`, `<x-card>`, dll). Dilarang keras merakit tag HTML dasar jika komponennya sudah ada.
+- **Notifikasi (SweetAlert2):** **DILARANG KERAS** menggunakan `alert()` atau `confirm()` bawaan browser Javascript. Gunakan SweetAlert2 (`Swal.fire`) di sisi Frontend, atau kirimkan via Controller (`return back()->with('success', '...')`).
+- **Dilarang Pakai Emoji:** Jangan pernah menggunakan emoji bawaan keyboard (seperti ❌, ✅, 🗑️) di antarmuka web. WAJIB gunakan ikon SVG (seperti Heroicons).
 - **Responsive:** Setiap antarmuka yang dibuat wajib *responsive* di segala ukuran layar.
 - **Copywriting:** Sistem internal WAJIB berbahasa Indonesia baku. Gunakan istilah `Tambah`, `Simpan`, `Ubah`, `Hapus` (JANGAN gunakan *Create*, *Submit*, *Update*, *Delete*).
+- **Catatan Desain Lengkap:** Anda **WAJIB** membaca file `docs/mwt-ui-ux.md` sebelum menyentuh file tampilan (Blade/CSS).
 
 ## 2. Aturan Database & Model
 - **Penamaan Tabel:** Wajib menggunakan Bahasa Inggris, *Plural*, dan *snake_case* (contoh: `employee_salaries`).
@@ -32,6 +33,7 @@ Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** me
 ## 6. Kerapian Kode & Format (Penting untuk AI)
 - **WAJIB JALANKAN PINT:** Jika Anda (AI Assistant) selesai membuat atau memodifikasi file PHP apa pun, Anda **WAJIB** mengeksekusi perintah `./vendor/bin/pint` di terminal sebelum menyelesaikan *task* atau sebelum Anda melakukan *commit*. 
 - CI/CD MWT sangat ketat. Jangan biarkan kode dengan *unused imports*, spasi berantakan, atau *syntax* yang tidak standar masuk ke GitHub!
+
 
 ---
 

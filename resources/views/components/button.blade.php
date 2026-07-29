@@ -5,7 +5,7 @@
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg';
+    $baseClasses = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg';
 
     $sizeClasses = [
         'sm' => 'px-4 py-2 text-sm',

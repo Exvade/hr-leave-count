@@ -122,6 +122,10 @@
                                         </x-select>
                                     </div>
                                     <div>
+                                        <label class="block text-sm font-medium mb-1">Kata Sandi (x-password)</label>
+                                        <x-password placeholder="Masukkan kata sandi..." />
+                                    </div>
+                                    <div>
                                         <label class="block text-sm font-medium mb-1 text-red-600 dark:text-red-400">Email
                                             Perusahaan</label>
                                         <x-input placeholder="email@mw-tunggal.co.id" :error="true" />

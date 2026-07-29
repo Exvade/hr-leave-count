@@ -114,6 +114,14 @@
                                         <x-input placeholder="Contoh: Budi Santoso" />
                                     </div>
                                     <div>
+                                        <label class="block text-sm font-medium mb-1">Departemen (x-select)</label>
+                                        <x-select>
+                                            <option>IT & Development</option>
+                                            <option>Human Resources</option>
+                                            <option>Finance</option>
+                                        </x-select>
+                                    </div>
+                                    <div>
                                         <label class="block text-sm font-medium mb-1 text-red-600 dark:text-red-400">Email
                                             Perusahaan</label>
                                         <x-input placeholder="email@mw-tunggal.co.id" :error="true" />

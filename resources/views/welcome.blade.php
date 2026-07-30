@@ -180,7 +180,95 @@
                 </div>
             </section>
 
+            <!-- Komponen Lanjutan -->
+            <section>
+                <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-800 pb-2">Komponen Lanjutan</h3>
+                
+                <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 lg:p-8 space-y-10">
+                    
+                    <!-- File Upload & Interactivity -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">File Upload (Drag & Drop)</h4>
+                            <x-file-upload name="document" label="Unggah Laporan Mingguan" accept=".pdf,.doc,.docx" />
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">Modal & Toast</h4>
+                            <div class="flex flex-col gap-4">
+                                <x-button variant="outline" @click="$dispatch('open-modal', 'demo-modal')">
+                                    Buka Modal Konfirmasi
+                                </x-button>
+                                
+                                <x-button variant="primary" @click="$dispatch('notify', { type: 'success', title: 'Berhasil', message: 'Tindakan Anda telah disimpan.' })">
+                                    Tampilkan Toast Sukses
+                                </x-button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Table & Empty State -->
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">Data Table & Empty State</h4>
+                        <x-table :headers="['Nama Pegawai', 'Departemen', 'Status', 'Aksi']">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap"><div class="font-semibold text-gray-900 dark:text-white">Budi Santoso</div></td>
+                                <td class="px-6 py-4 whitespace-nowrap">IT & Development</td>
+                                <td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-brand-dark border border-green-200">Aktif</span></td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-3">
+                                        <button class="text-gray-400 hover:text-brand-light transition-colors" title="Edit">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-red-500 transition-colors" title="Hapus">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap"><div class="font-semibold text-gray-900 dark:text-white">Siti Aminah</div></td>
+                                <td class="px-6 py-4 whitespace-nowrap">Human Resources</td>
+                                <td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">Cuti</span></td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-3">
+                                        <button class="text-gray-400 hover:text-brand-light transition-colors" title="Edit">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-red-500 transition-colors" title="Hapus">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </x-table>
+                        
+                        <div class="mt-6">
+                            <x-empty-state 
+                                title="Data Tidak Ditemukan" 
+                                description="Anda belum menambahkan laporan bulan ini. Klik tombol di bawah untuk mulai.">
+                                <x-slot name="action">
+                                    <x-button variant="primary">Tambah Laporan</x-button>
+                                </x-slot>
+                            </x-empty-state>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+
         </main>
+
+        <!-- Demo Modal -->
+        <x-modal name="demo-modal" maxWidth="md">
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Konfirmasi Penghapusan</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+                <div class="flex justify-end gap-3">
+                    <x-button variant="outline" @click="$dispatch('close-modal', 'demo-modal')">Batal</x-button>
+                    <x-button variant="danger" @click="$dispatch('close-modal', 'demo-modal'); $dispatch('notify', { type: 'error', message: 'Data telah dihapus.' })">Ya, Hapus</x-button>
+                </div>
+            </div>
+        </x-modal>
 
         <!-- Footer -->
         <footer

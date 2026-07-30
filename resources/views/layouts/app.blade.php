@@ -42,20 +42,40 @@
       :class="{ 'dark': darkMode }"
       class="bg-brand-surface dark:bg-gray-900 font-sans text-brand-text dark:text-gray-100 flex flex-col min-h-screen transition-colors duration-300">
     
+    <!-- Global SweetAlert2 Toast Mixin -->
+    <script>
+        window.SwalToast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+
+        // Event listener for Alpine/Livewire integration
+        window.addEventListener('notify', event => {
+            let detail = event.detail;
+            if (Array.isArray(detail) && detail.length > 0) { detail = detail[0]; } // Handle Livewire array wrapping
+            window.SwalToast.fire({
+                icon: detail.type || 'success',
+                title: detail.title || 'Pemberitahuan',
+                text: detail.message || ''
+            });
+        });
+    </script>
+
     <!-- Flash Messages via SweetAlert2 (Global) -->
     @if(session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
+                window.SwalToast.fire({
                     icon: 'success',
                     title: 'Berhasil!',
-                    text: '{{ session('success') }}',
-                    confirmButtonColor: '#22c55e',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
+                    text: '{{ session('success') }}'
                 });
             });
         </script>

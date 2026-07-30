@@ -3,6 +3,7 @@
 Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** mematuhi aturan spesifik perusahaan berikut ini sebelum membuat atau memodifikasi kode:
 
 ## 1. Aturan UI/UX & Frontend (SANGAT PENTING UNTUK AI)
+- **Action Buttons (Tabel/Card):** Jika Anda membuat tombol aksi (*Action Buttons*) seperti "Edit", "Hapus", atau "Detail" di dalam sebuah *Data Table* atau *Card*, **WAJIB menggunakan ikon SVG** (bukan teks biasa seperti tulisan "Edit"). Gunakan *icon* ringan (contoh: Heroicons) untuk menghemat ruang dan meningkatkan estetika UI.
 - **Tailwind v4 & Warna MWT:** Proyek ini menggunakan Tailwind v4 (konfigurasi ada di `resources/css/app.css`, BUKAN `tailwind.config.js`). Warna identitas perusahaan **SUDAH TERSEDIA** yaitu: `brand-dark`, `brand-light`, `brand-surface`, `brand-text`. Anda **WAJIB** menggunakan warna ini (contoh: `bg-brand-dark`, `text-brand-light`) dan JANGAN pernah menyimpulkan bahwa warna tersebut belum ada di CSS.
 - **Logo Perusahaan:** Anda **WAJIB** menggunakan logo MWT yang sudah tersedia di folder `public/assets/images/logo/` (misalnya `logo-landscape.webp` atau `logo-square.webp`). **DILARANG KERAS** menggunakan logo atau avatar *dummy* (seperti inisial huruf, ui-avatars.com, atau placehold.co) untuk merepresentasikan *brand* perusahaan.
 - **Komponen Wajib:** Selalu gunakan komponen bawaan Blade yang ada di `resources/views/components/` (contoh: `<x-button>`, `<x-input>`, `<x-select>`, `<x-card>`, dll). Dilarang keras merakit tag HTML dasar jika komponennya sudah ada.

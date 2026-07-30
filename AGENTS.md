@@ -3,6 +3,8 @@
 Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** mematuhi aturan spesifik perusahaan berikut ini sebelum membuat atau memodifikasi kode:
 
 ## 1. Aturan UI/UX & Frontend (SANGAT PENTING UNTUK AI)
+- **Tailwind v4 & Warna MWT:** Proyek ini menggunakan Tailwind v4 (konfigurasi ada di `resources/css/app.css`, BUKAN `tailwind.config.js`). Warna identitas perusahaan **SUDAH TERSEDIA** yaitu: `brand-dark`, `brand-light`, `brand-surface`, `brand-text`. Anda **WAJIB** menggunakan warna ini (contoh: `bg-brand-dark`, `text-brand-light`) dan JANGAN pernah menyimpulkan bahwa warna tersebut belum ada di CSS.
+- **Logo Perusahaan:** Anda **WAJIB** menggunakan logo MWT yang sudah tersedia di folder `public/assets/images/logo/` (misalnya `logo-landscape.webp` atau `logo-square.webp`). **DILARANG KERAS** menggunakan logo atau avatar *dummy* (seperti inisial huruf, ui-avatars.com, atau placehold.co) untuk merepresentasikan *brand* perusahaan.
 - **Komponen Wajib:** Selalu gunakan komponen bawaan Blade yang ada di `resources/views/components/` (contoh: `<x-button>`, `<x-input>`, `<x-select>`, `<x-card>`, dll). Dilarang keras merakit tag HTML dasar jika komponennya sudah ada.
 - **Notifikasi (SweetAlert2):** **DILARANG KERAS** menggunakan `alert()` atau `confirm()` bawaan browser Javascript. Gunakan SweetAlert2 (`Swal.fire`) di sisi Frontend, atau kirimkan via Controller (`return back()->with('success', '...')`).
 - **Dilarang Pakai Emoji:** Jangan pernah menggunakan emoji bawaan keyboard (seperti ❌, ✅, 🗑️) di antarmuka web. WAJIB gunakan ikon SVG (seperti Heroicons).

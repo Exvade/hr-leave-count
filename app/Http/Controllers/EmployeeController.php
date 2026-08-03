@@ -61,7 +61,6 @@ class EmployeeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'leave_taken' => 'required|integer|min:0',
         ]);
 
         try {
@@ -69,7 +68,6 @@ class EmployeeController extends Controller
             $employee->update([
                 'name' => $request->name,
                 'position' => $request->position,
-                'leave_taken' => $request->leave_taken,
             ]);
             DB::commit();
 
@@ -163,6 +161,78 @@ class EmployeeController extends Controller
             Log::error('Error delete employee: ' . $e->getMessage());
 
             return back()->with('error', 'Terjadi kesalahan saat menghapus data karyawan.');
+        }
+    }
+
+    public function importLeaves(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $collection = (new FastExcel)->withoutHeaders()->import($request->file('file'));
+
+            foreach ($collection as $index => $row) {
+                // NIK index 1, Dari Tanggal index 3, Sampai Tanggal index 4, Durasi index 5
+                if (! isset($row[1]) || ! isset($row[3]) || ! isset($row[4]) || ! isset($row[5])) {
+                    continue;
+                }
+
+                $nik = trim($row[1]);
+                $durasi = trim($row[5]);
+
+                if (strtolower($nik) === 'nik' || (stripos((string) $row[0], 'N') !== false && $index === 0)) {
+                    continue;
+                }
+
+                if (! is_numeric($durasi)) {
+                    continue;
+                }
+
+                $employee = Employee::where('employee_id', $nik)->first();
+                if (! $employee) {
+                    continue;
+                }
+
+                $parseDate = function ($rawDate) {
+                    if ($rawDate instanceof \DateTimeInterface) {
+                        return $rawDate->format('Y-m-d');
+                    } else {
+                        try {
+                            return Carbon::createFromFormat('d/m/Y', $rawDate)->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            try {
+                                return Carbon::parse($rawDate)->format('Y-m-d');
+                            } catch (\Exception $e) {
+                                return null;
+                            }
+                        }
+                    }
+                };
+
+                $startDate = $parseDate($row[3]);
+                $endDate = $parseDate($row[4]);
+
+                if ($startDate && $endDate) {
+                    $employee->leaveRecords()->create([
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'duration' => (int) $durasi,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'Riwayat cuti berhasil diimpor.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error import rekap cuti: ' . $e->getMessage());
+
+            return back()->with('error', 'Gagal mengimpor rekap cuti. Pastikan format Excel sesuai. (' . $e->getMessage() . ')');
         }
     }
 }

@@ -23,12 +23,17 @@
                 </div>
             </div>
 
-            <button @click="$dispatch('open-modal', 'import-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all duration-300">
+            <button @click="$dispatch('open-modal', 'import-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 whitespace-nowrap bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                Import
+                Data Karyawan
             </button>
 
-            <button @click="$dispatch('open-modal', 'create-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 bg-gradient-to-r from-brand-dark to-brand-light hover:from-brand-light hover:to-brand-dark text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-brand-light/20 hover:shadow-brand-light/40 transform hover:-translate-y-0.5 transition-all duration-300">
+            <button @click="$dispatch('open-modal', 'import-leave-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 whitespace-nowrap bg-white dark:bg-gray-800 border border-brand-light/30 dark:border-brand-light/20 text-brand-light dark:text-brand-light hover:bg-brand-light/10 dark:hover:bg-brand-light/10 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Rekap Cuti
+            </button>
+
+            <button @click="$dispatch('open-modal', 'create-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 whitespace-nowrap bg-gradient-to-r from-brand-dark to-brand-light hover:from-brand-light hover:to-brand-dark text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-brand-light/20 hover:shadow-brand-light/40 transform hover:-translate-y-0.5 transition-all duration-300">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Tambah Karyawan
             </button>
@@ -76,7 +81,14 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    <button @click="$dispatch('open-modal', 'edit-modal'); $dispatch('set-edit-employee', { id: '{{ $employee->id }}', name: '{{ addslashes($employee->name) }}', position: '{{ addslashes($employee->position) }}', taken: {{ $employee->leave_taken }} })" 
+                                    @php
+                                        $details = json_encode($employee->leave_details);
+                                    @endphp
+                                    <button @click="$dispatch('open-modal', 'detail-modal'); $dispatch('set-detail-employee', { name: '{{ addslashes($employee->name) }}', details: {{ $details }} })" 
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-white hover:bg-blue-500 hover:shadow-md hover:shadow-blue-500/30 transform hover:scale-110 transition-all duration-200" title="Detail Cuti">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    </button>
+                                    <button @click="$dispatch('open-modal', 'edit-modal'); $dispatch('set-edit-employee', { id: '{{ $employee->id }}', name: '{{ addslashes($employee->name) }}', position: '{{ addslashes($employee->position) }}' })" 
                                         class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-white hover:bg-brand-light hover:shadow-md hover:shadow-brand-light/30 transform hover:scale-110 transition-all duration-200" title="Ubah Data">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                     </button>
@@ -138,6 +150,28 @@
     </div>
 </x-modal>
 
+<!-- Import Rekap Cuti Modal -->
+<x-modal name="import-leave-modal" maxWidth="md">
+    <div class="p-6">
+        <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-2">Import Rekap Cuti</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Unggah file Excel yang berisi riwayat pengambilan cuti (Durasi akan diakumulasikan ke Cuti Terpakai).</p>
+        <form action="{{ route('employees.import-leaves') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="mb-6">
+                <x-file-upload name="file" label="" accept=".xlsx,.xls" />
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" @click="$dispatch('close-modal', 'import-leave-modal')" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md shadow-brand-light/20 transition-all">
+                    Mulai Import
+                </button>
+            </div>
+        </form>
+    </div>
+</x-modal>
+
 <!-- Create Modal -->
 <x-modal name="create-modal" maxWidth="md">
     <div class="p-6">
@@ -179,8 +213,8 @@
 </x-modal>
 
 <!-- Edit Modal -->
-<div x-data="{ editId: '', editName: '', editPosition: '', editTaken: 0 }" 
-     @set-edit-employee.window="editId = $event.detail.id; editName = $event.detail.name; editPosition = $event.detail.position; editTaken = $event.detail.taken;">
+<div x-data="{ editId: '', editName: '', editPosition: '' }" 
+     @set-edit-employee.window="editId = $event.detail.id; editName = $event.detail.name; editPosition = $event.detail.position;">
     <x-modal name="edit-modal" maxWidth="md">
         <div class="p-6">
             <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-6">Ubah Data Karyawan</h2>
@@ -197,12 +231,7 @@
                         <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Jabatan</label>
                         <input type="text" name="position" x-model="editPosition" required 
                             class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Total Cuti Diambil</label>
-                        <input type="number" name="leave_taken" x-model="editTaken" min="0" required 
-                            class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
-                        <p class="mt-1 text-xs text-gray-500">*Tanggal Bergabung tidak dapat diubah</p>
+                        <p class="mt-2 text-xs text-gray-500">*Cuti Terpakai kini dihitung secara otomatis berdasarkan riwayat Rekap Cuti.</p>
                     </div>
                 </div>
                 <div class="flex justify-end gap-3">
@@ -214,6 +243,60 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </x-modal>
+</div>
+
+<!-- Detail Modal -->
+<div x-data="{ detailName: '', d: {} }" 
+     @set-detail-employee.window="detailName = $event.detail.name; d = $event.detail.details;">
+    <x-modal name="detail-modal" maxWidth="md">
+        <div class="p-6">
+            <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-2">Rincian Saldo Cuti</h2>
+            <p class="text-sm font-semibold text-brand-light mb-6" x-text="detailName"></p>
+            
+            <div class="space-y-4">
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Anniversary Saat Ini</span>
+                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200" x-text="d.anniv_saat_ini"></span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Hak Periode Sebelumnya</span>
+                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span x-text="d.hak_periode_sebelumnya"></span> Hari</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Dipakai Periode Sebelumnya</span>
+                    <span class="text-sm font-semibold text-red-500"><span x-text="d.dipakai_periode_sebelumnya"></span> Hari</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Batas Pengambilan (Hangus)</span>
+                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200" x-text="d.batas_pengambilan"></span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Status Saldo Sebelumnya</span>
+                    <span class="text-xs font-bold px-2 py-1 rounded-full" 
+                        :class="d.status_hangus === 'HANGUS' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'"
+                        x-text="d.status_hangus"></span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Hak Periode Berjalan</span>
+                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span x-text="d.hak_periode_berjalan"></span> Hari</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Dipakai Periode Berjalan</span>
+                    <span class="text-sm font-semibold text-red-500"><span x-text="d.dipakai_periode_berjalan"></span> Hari</span>
+                </div>
+                <div class="flex justify-between items-center pt-2 mt-4">
+                    <span class="text-base font-bold text-gray-900 dark:text-white">Total Saldo Cuti</span>
+                    <span class="text-lg font-black text-brand-light"><span x-text="d.total_saldo"></span> Hari</span>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex justify-end">
+                <button type="button" @click="$dispatch('close-modal', 'detail-modal')" class="px-5 py-2.5 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md transition-all">
+                    Tutup
+                </button>
+            </div>
         </div>
     </x-modal>
 </div>

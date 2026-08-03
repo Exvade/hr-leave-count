@@ -8,6 +8,17 @@
         <div class="flex items-center gap-3">
             <span class="font-bold text-gray-700 dark:text-gray-300">Penghitung Cuti Karyawan</span>
         </div>
+        <div class="flex items-center gap-4">
+            <div class="text-sm font-medium text-gray-500 dark:text-gray-400 hidden sm:block">
+                {{ now()->format('l, d F Y') }}
+            </div>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                    Keluar
+                </button>
+            </form>
+        </div>
     </header>
 
     <main x-data="employeeSearch" class="flex-grow max-w-7xl mx-auto w-full px-6 py-10 flex flex-col gap-6">

@@ -28,20 +28,52 @@ class EmployeeController extends Controller
         return view('employees.index', compact('employees', 'search'));
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|string|max:50|unique:employees,employee_id',
+            'name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'join_date' => 'required|date',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            Employee::create([
+                'employee_id' => $request->employee_id,
+                'name' => $request->name,
+                'position' => $request->position,
+                'join_date' => $request->join_date,
+            ]);
+            DB::commit();
+
+            return back()->with('success', 'Karyawan baru berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error store employee: ' . $e->getMessage());
+
+            return back()->with('error', 'Terjadi kesalahan saat menambahkan karyawan baru.');
+        }
+    }
+
     public function update(Request $request, Employee $employee)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
             'leave_taken' => 'required|integer|min:0',
         ]);
 
         try {
             DB::beginTransaction();
             $employee->update([
+                'name' => $request->name,
+                'position' => $request->position,
                 'leave_taken' => $request->leave_taken,
             ]);
             DB::commit();
 
-            return back()->with('success', 'Data cuti berhasil diperbarui.');
+            return back()->with('success', 'Data karyawan berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error update leave taken: ' . $e->getMessage());
@@ -115,6 +147,22 @@ class EmployeeController extends Controller
             Log::error('Error import excel: ' . $e->getMessage());
 
             return back()->with('error', 'Gagal mengimpor data. Pastikan format Excel sesuai. (' . $e->getMessage() . ')');
+        }
+    }
+
+    public function destroy(Employee $employee)
+    {
+        try {
+            DB::beginTransaction();
+            $employee->delete();
+            DB::commit();
+
+            return back()->with('success', 'Data karyawan berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error delete employee: ' . $e->getMessage());
+
+            return back()->with('error', 'Terjadi kesalahan saat menghapus data karyawan.');
         }
     }
 }

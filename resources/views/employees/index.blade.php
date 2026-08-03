@@ -3,127 +3,226 @@
 @section('title', 'Data Karyawan & Cuti')
 
 @section('content')
-<div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-    <header class="w-full py-4 px-6 md:px-10 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex justify-between items-center shadow-sm">
-        <div class="flex items-center gap-3">
-            <span class="font-bold text-gray-700 dark:text-gray-300">Penghitung Cuti Karyawan</span>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col gap-8" x-data="employeeSearch">
+    <!-- Top Action Bar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-10">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Daftar Karyawan</h1>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Kelola kuota cuti tahunan dan riwayat pengambilan cuti seluruh karyawan.</p>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="text-sm font-medium text-gray-500 dark:text-gray-400 hidden sm:block">
-                {{ now()->format('l, d F Y') }}
-            </div>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
-                    Keluar
-                </button>
-            </form>
-        </div>
-    </header>
-
-    <main x-data="employeeSearch" class="flex-grow max-w-7xl mx-auto w-full px-6 py-10 flex flex-col gap-6">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Daftar Karyawan</h2>
-            
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-                <div class="flex-grow sm:flex-grow-0 flex items-center gap-2 relative">
-                    <x-input type="text" x-model="query" @input.debounce.500ms="search" placeholder="Cari NIK atau Nama..." class="w-full sm:w-64" />
-                    <div x-show="loading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    </div>
+        
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <div class="w-full sm:w-72 relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-brand-light transition-colors duration-300">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-
-                <x-button variant="primary" @click="$dispatch('open-modal', 'import-modal')" class="shrink-0">
-                    <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    Import Excel
-                </x-button>
+                <input type="text" x-model="query" @input.debounce.500ms="search" placeholder="Cari NIK atau Nama..." 
+                    class="w-full pl-11 pr-10 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-brand-light focus:border-transparent rounded-xl transition-all duration-300 outline-none shadow-sm dark:text-white" />
+                <div x-show="loading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <svg class="animate-spin h-5 w-5 text-brand-light" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </div>
             </div>
-        </div>
 
-        <x-card>
-            <div id="table-container">
-                <div class="overflow-x-auto">
-                    <x-table :headers="['EMPL.ID', 'Nama', 'Jabatan', 'Tgl Bergabung', 'Jatah Cuti', 'Cuti Terpakai', 'Sisa Cuti', 'Aksi']">
+            <button @click="$dispatch('open-modal', 'import-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all duration-300">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Import
+            </button>
+
+            <button @click="$dispatch('open-modal', 'create-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 bg-gradient-to-r from-brand-dark to-brand-light hover:from-brand-light hover:to-brand-dark text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-brand-light/20 hover:shadow-brand-light/40 transform hover:-translate-y-0.5 transition-all duration-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Tambah Karyawan
+            </button>
+        </div>
+    </div>
+
+    <!-- Glassmorphism Table Container -->
+    <div class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 shadow-xl rounded-2xl overflow-hidden transition-all duration-300 relative z-10">
+        <div id="table-container">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-700/50 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold">
+                            <th class="px-6 py-4">EMPL.ID</th>
+                            <th class="px-6 py-4">Nama</th>
+                            <th class="px-6 py-4">Jabatan</th>
+                            <th class="px-6 py-4 text-center">Tgl Bergabung</th>
+                            <th class="px-6 py-4 text-center">Jatah Cuti</th>
+                            <th class="px-6 py-4 text-center">Terpakai</th>
+                            <th class="px-6 py-4 text-center">Sisa Cuti</th>
+                            <th class="px-6 py-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200/30 dark:divide-gray-700/30">
                         @forelse($employees as $employee)
-                        <tr>
+                        <tr class="hover:bg-brand-light/5 dark:hover:bg-brand-light/10 transition-colors duration-200 group">
                             <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900 dark:text-white">{{ $employee->employee_id }}</div></td>
-                            <td class="px-6 py-4 whitespace-nowrap"><div class="font-semibold text-gray-900 dark:text-white">{{ $employee->name }}</div></td>
-                            <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ $employee->position }}</div></td>
-                            <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500">{{ $employee->join_date->format('d/m/Y') }}</div></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center"><div class="text-sm font-semibold">{{ $employee->leave_quota }}</div></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center"><div class="text-sm font-semibold text-gray-500">{{ $employee->leave_taken }}</div></td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="font-bold text-gray-900 dark:text-white group-hover:text-brand-light transition-colors">{{ $employee->name }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-500 dark:text-gray-400">{{ $employee->position }}</div></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center"><div class="text-sm text-gray-500 dark:text-gray-400">{{ $employee->join_date->format('d/m/Y') }}</div></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center"><div class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ $employee->leave_quota }}</div></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center"><div class="text-sm font-bold text-amber-600 dark:text-amber-500">{{ $employee->leave_taken }}</div></td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $employee->remaining_leave > 0 ? 'bg-green-100 text-brand-dark' : 'bg-red-100 text-red-800' }}">
+                                @if($employee->remaining_leave > 0)
+                                <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 shadow-sm">
                                     {{ $employee->remaining_leave }}
                                 </span>
+                                @else
+                                <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-rose-100/80 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50 shadow-sm animate-pulse">
+                                    {{ $employee->remaining_leave }}
+                                </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <button @click="$dispatch('open-modal', 'edit-modal'); $dispatch('set-edit-employee', { id: '{{ $employee->id }}', name: '{{ addslashes($employee->name) }}', taken: {{ $employee->leave_taken }} })" class="text-gray-400 hover:text-brand-light transition-colors" title="Ubah Cuti Terpakai">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                </button>
+                                <div class="flex items-center justify-center gap-2">
+                                    <button @click="$dispatch('open-modal', 'edit-modal'); $dispatch('set-edit-employee', { id: '{{ $employee->id }}', name: '{{ addslashes($employee->name) }}', position: '{{ addslashes($employee->position) }}', taken: {{ $employee->leave_taken }} })" 
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-white hover:bg-brand-light hover:shadow-md hover:shadow-brand-light/30 transform hover:scale-110 transition-all duration-200" title="Ubah Data">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    </button>
+                                    <button @click="confirmDelete('{{ $employee->id }}', '{{ addslashes($employee->name) }}')"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-white hover:bg-red-500 hover:shadow-md hover:shadow-red-500/30 transform hover:scale-110 transition-all duration-200" title="Hapus Data">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-8 text-center">
-                                <x-empty-state title="Data tidak ditemukan" description="Tidak ada karyawan yang cocok dengan pencarian Anda.">
-                                    <x-slot name="action">
-                                        <x-button variant="outline" @click="query = ''; search()">Reset Pencarian</x-button>
-                                    </x-slot>
-                                </x-empty-state>
+                            <td colspan="8" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Data tidak ditemukan</h3>
+                                    <p class="text-gray-500 dark:text-gray-400 mb-4 text-sm">Tidak ada karyawan yang cocok dengan kriteria pencarian Anda.</p>
+                                    <button @click="query = ''; search()" class="text-sm font-medium text-brand-light hover:text-brand-dark transition-colors">
+                                        Reset Pencarian
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         @endforelse
-                    </x-table>
-                </div>
-                
-                <div class="mt-4">
-                    {{ $employees->links() }}
-                </div>
+                    </tbody>
+                </table>
             </div>
-        </x-card>
-    </main>
+            
+            @if($employees->hasPages())
+            <div class="px-6 py-4 border-t border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/50">
+                {{ $employees->links() }}
+            </div>
+            @endif
+        </div>
+    </div>
 </div>
 
 <!-- Import Modal -->
 <x-modal name="import-modal" maxWidth="md">
     <div class="p-6">
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Import Data Karyawan</h2>
+        <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-2">Import Data Karyawan</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Unggah file Excel (.xlsx atau .xls) yang berisi daftar karyawan.</p>
         <form action="{{ route('employees.import') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <div class="mb-4">
-                <x-file-upload name="file" label="Pilih File Excel (.xlsx, .xls)" accept=".xlsx,.xls" />
+            <div class="mb-6">
+                <x-file-upload name="file" label="" accept=".xlsx,.xls" />
             </div>
-            <div class="flex justify-end gap-3 mt-6">
-                <x-button type="button" variant="outline" @click="$dispatch('close-modal', 'import-modal')">Batal</x-button>
-                <x-button type="submit" variant="primary">Import</x-button>
+            <div class="flex justify-end gap-3">
+                <button type="button" @click="$dispatch('close-modal', 'import-modal')" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md shadow-brand-light/20 transition-all">
+                    Mulai Import
+                </button>
+            </div>
+        </form>
+    </div>
+</x-modal>
+
+<!-- Create Modal -->
+<x-modal name="create-modal" maxWidth="md">
+    <div class="p-6">
+        <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-6">Tambah Karyawan Baru</h2>
+        <form action="{{ route('employees.store') }}" method="POST">
+            @csrf
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">ID Karyawan (EMPL.ID)</label>
+                    <input type="text" name="employee_id" required placeholder="Contoh: MWT-001"
+                        class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Lengkap</label>
+                    <input type="text" name="name" required placeholder="Masukkan nama..."
+                        class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Jabatan</label>
+                    <input type="text" name="position" required placeholder="Contoh: Staff IT"
+                        class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Tanggal Bergabung</label>
+                    <input type="date" name="join_date" required 
+                        class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
+                </div>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" @click="$dispatch('close-modal', 'create-modal')" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md shadow-brand-light/20 transition-all">
+                    Simpan Data
+                </button>
             </div>
         </form>
     </div>
 </x-modal>
 
 <!-- Edit Modal -->
-<div x-data="{ editId: '', editName: '', editTaken: 0 }" 
-     @set-edit-employee.window="editId = $event.detail.id; editName = $event.detail.name; editTaken = $event.detail.taken;">
-    <x-modal name="edit-modal" maxWidth="sm">
+<div x-data="{ editId: '', editName: '', editPosition: '', editTaken: 0 }" 
+     @set-edit-employee.window="editId = $event.detail.id; editName = $event.detail.name; editPosition = $event.detail.position; editTaken = $event.detail.taken;">
+    <x-modal name="edit-modal" maxWidth="md">
         <div class="p-6">
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Ubah Cuti Terpakai</h2>
-            <p class="text-sm text-gray-500 mb-6" x-text="'Karyawan: ' + editName"></p>
+            <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-6">Ubah Data Karyawan</h2>
             <form :action="'{{ url('employees') }}/' + editId" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Jumlah Cuti Terpakai</label>
-                    <x-input type="number" name="leave_taken" x-model="editTaken" min="0" required />
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Lengkap</label>
+                        <input type="text" name="name" x-model="editName" required 
+                            class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Jabatan</label>
+                        <input type="text" name="position" x-model="editPosition" required 
+                            class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Total Cuti Diambil</label>
+                        <input type="number" name="leave_taken" x-model="editTaken" min="0" required 
+                            class="w-full py-2.5 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-xl transition-all outline-none dark:text-white" />
+                        <p class="mt-1 text-xs text-gray-500">*Tanggal Bergabung tidak dapat diubah</p>
+                    </div>
                 </div>
                 <div class="flex justify-end gap-3">
-                    <x-button type="button" variant="outline" @click="$dispatch('close-modal', 'edit-modal')">Batal</x-button>
-                    <x-button type="submit" variant="primary">Simpan</x-button>
+                    <button type="button" @click="$dispatch('close-modal', 'edit-modal')" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md shadow-brand-light/20 transition-all">
+                        Simpan Perubahan
+                    </button>
                 </div>
             </form>
         </div>
     </x-modal>
 </div>
+
+<!-- Hidden Delete Form -->
+<form id="delete-form" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
 
 <script>
     document.addEventListener('alpine:init', () => {
@@ -142,24 +241,33 @@
                     url.searchParams.delete('page');
                 }
                 
-                // Fetch new table data from server
-                fetch(url, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(res => res.text())
                 .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    // Replace the table container content
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
                     document.getElementById('table-container').innerHTML = doc.getElementById('table-container').innerHTML;
-                    
-                    // Update the URL without a page reload
                     window.history.pushState({}, '', url);
                 })
                 .catch(err => console.error('Search failed:', err))
-                .finally(() => {
-                    this.loading = false;
+                .finally(() => { this.loading = false; });
+            },
+            confirmDelete(id, name) {
+                Swal.fire({
+                    title: 'Hapus Data?',
+                    html: `Anda yakin ingin menghapus data <b>${name}</b>?<br>Tindakan ini tidak dapat dibatalkan.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.getElementById('delete-form');
+                        form.action = `{{ url('employees') }}/${id}`;
+                        form.submit();
+                    }
                 });
             }
         }));

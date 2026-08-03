@@ -37,7 +37,6 @@ Jika Anda adalah sebuah AI Assistant (Copilot, Windsurf, dll), Anda **WAJIB** me
 - **WAJIB JALANKAN PINT:** Jika Anda (AI Assistant) selesai membuat atau memodifikasi file PHP apa pun, Anda **WAJIB** mengeksekusi perintah `./vendor/bin/pint` di terminal sebelum menyelesaikan *task* atau sebelum Anda melakukan *commit*. 
 - CI/CD MWT sangat ketat. Jangan biarkan kode dengan *unused imports*, spasi berantakan, atau *syntax* yang tidak standar masuk ke GitHub!
 
-
 ---
 
 <laravel-boost-guidelines>
@@ -51,7 +50,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.2
+- php - 8.3
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
 - laravel/boost (BOOST) - v2
@@ -61,6 +60,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/sail (SAIL) - v1
 - pestphp/pest (PEST) - v3
 - phpunit/phpunit (PHPUNIT) - v11
+- alpinejs (ALPINEJS) - v3
 - tailwindcss (TAILWINDCSS) - v4
 
 ## Skills Activation

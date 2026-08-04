@@ -5,38 +5,60 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col gap-8" x-data="employeeSearch">
     <!-- Top Action Bar -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-10">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-50">
         <div>
             <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Daftar Karyawan</h1>
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Kelola kuota cuti tahunan dan riwayat pengambilan cuti seluruh karyawan.</p>
         </div>
         
-        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <div class="w-full sm:w-72 relative group">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-brand-light transition-colors duration-300">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto flex-wrap justify-end">
+            <div class="flex gap-4 w-full sm:w-auto">
+                <div class="w-full sm:w-64 relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-brand-light transition-colors duration-300">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" x-model="query" @input.debounce.500ms="search" placeholder="Cari NIK atau Nama..." 
+                        class="w-full pl-11 pr-10 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-brand-light focus:border-transparent rounded-xl transition-all duration-300 outline-none shadow-sm dark:text-white text-sm" />
+                    <div x-show="loading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <svg class="animate-spin h-5 w-5 text-brand-light" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </div>
                 </div>
-                <input type="text" x-model="query" @input.debounce.500ms="search" placeholder="Cari NIK atau Nama..." 
-                    class="w-full pl-11 pr-10 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-brand-light focus:border-transparent rounded-xl transition-all duration-300 outline-none shadow-sm dark:text-white" />
-                <div x-show="loading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <svg class="animate-spin h-5 w-5 text-brand-light" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+
+                <div class="w-full sm:w-64 relative">
+                    <x-select x-model="department" @change="search">
+                        <option value="">Semua Departemen</option>
+                        @foreach($positions as $pos)
+                            <option value="{{ $pos }}">{{ $pos }}</option>
+                        @endforeach
+                    </x-select>
                 </div>
             </div>
 
-            <button @click="$dispatch('open-modal', 'import-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 whitespace-nowrap bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
-                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                Data Karyawan
-            </button>
+            <div class="flex gap-3 w-full sm:w-auto">
+                <button type="button" @click="exportReport('excel')" class="flex-1 sm:flex-none flex justify-center items-center gap-2 whitespace-nowrap bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Excel
+                </button>
+                <button type="button" @click="exportReport('pdf')" class="flex-1 sm:flex-none flex justify-center items-center gap-2 whitespace-nowrap bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    PDF
+                </button>
+            </div>
 
-            <button @click="$dispatch('open-modal', 'import-leave-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 whitespace-nowrap bg-white dark:bg-gray-800 border border-brand-light/30 dark:border-brand-light/20 text-brand-light dark:text-brand-light hover:bg-brand-light/10 dark:hover:bg-brand-light/10 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Rekap Cuti
-            </button>
-
-            <button @click="$dispatch('open-modal', 'create-modal')" class="w-full sm:w-auto flex justify-center items-center gap-2 whitespace-nowrap bg-gradient-to-r from-brand-dark to-brand-light hover:from-brand-light hover:to-brand-dark text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-brand-light/20 hover:shadow-brand-light/40 transform hover:-translate-y-0.5 transition-all duration-300">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah Karyawan
-            </button>
+            <div class="flex gap-3 w-full sm:w-auto">
+                <button @click="$dispatch('open-modal', 'import-modal')" class="flex-1 sm:flex-none flex justify-center items-center gap-2 whitespace-nowrap bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Data
+                </button>
+                <button @click="$dispatch('open-modal', 'import-leave-modal')" class="flex-1 sm:flex-none flex justify-center items-center gap-2 whitespace-nowrap bg-white dark:bg-gray-800 border border-brand-light/30 dark:border-brand-light/20 text-brand-light dark:text-brand-light hover:bg-brand-light/10 dark:hover:bg-brand-light/10 text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Cuti
+                </button>
+                <button @click="$dispatch('open-modal', 'create-modal')" class="flex-1 sm:flex-none flex justify-center items-center gap-2 whitespace-nowrap bg-gradient-to-r from-brand-dark to-brand-light hover:from-brand-light hover:to-brand-dark text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-brand-light/20 hover:shadow-brand-light/40 transform hover:-translate-y-0.5 transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah
+                </button>
+            </div>
         </div>
     </div>
 
@@ -387,6 +409,7 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('employeeSearch', () => ({
             query: '{{ request('search') }}',
+            department: '{{ request('department') }}',
             loading: false,
             search() {
                 this.loading = true;
@@ -397,6 +420,16 @@
                     url.searchParams.delete('page');
                 } else {
                     url.searchParams.delete('search');
+                }
+
+                if (this.department) {
+                    url.searchParams.set('department', this.department);
+                    url.searchParams.delete('page');
+                } else {
+                    url.searchParams.delete('department');
+                }
+
+                if (!this.query && !this.department) {
                     url.searchParams.delete('page');
                 }
                 
@@ -409,6 +442,11 @@
                 })
                 .catch(err => console.error('Search failed:', err))
                 .finally(() => { this.loading = false; });
+            },
+            exportReport(type) {
+                let url = type === 'excel' ? '{{ url("export/excel") }}' : '{{ url("export/pdf") }}';
+                url += `?search=${encodeURIComponent(this.query)}&department=${encodeURIComponent(this.department)}`;
+                window.open(url, '_blank');
             },
             confirmDelete(id, name) {
                 Swal.fire({

@@ -14,18 +14,30 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $department = $request->input('department');
 
-        $employees = Employee::with('leaveRecords')->when($search, function ($query) use ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('employee_id', 'like', '%' . $search . '%');
-            });
-        })
+        $employees = Employee::with('leaveRecords')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('employee_id', 'like', '%' . $search . '%');
+                });
+            })
+            ->when($department, function ($query) use ($department) {
+                $query->where('position', $department);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(10)
-            ->appends(['search' => $search]);
+            ->appends(['search' => $search, 'department' => $department]);
 
-        return view('employees.index', compact('employees', 'search'));
+        $positions = Employee::select('position')
+            ->whereNotNull('position')
+            ->where('position', '!=', '')
+            ->distinct()
+            ->orderBy('position')
+            ->pluck('position');
+
+        return view('employees.index', compact('employees', 'search', 'department', 'positions'));
     }
 
     public function store(Request $request)

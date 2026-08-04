@@ -26,7 +26,10 @@ class Employee extends BaseModel
 
     public function getLeaveTakenAttribute(): int
     {
-        return $this->leaveRecords()->sum('duration');
+        $details = $this->leave_details;
+        $dipakaiLama = $details['status_hangus'] === 'HANGUS' ? 0 : $details['dipakai_periode_sebelumnya'];
+
+        return $dipakaiLama + $details['dipakai_periode_berjalan'];
     }
 
     public function getLeaveDetailsAttribute(): array

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
@@ -16,4 +17,7 @@ Route::middleware(['simple.auth'])->group(function () {
     Route::post('/employees/import', [EmployeeController::class, 'import'])->name('employees.import');
     Route::post('/employees/import-leaves', [EmployeeController::class, 'importLeaves'])->name('employees.import-leaves');
     Route::post('/employees/{employee}/leaves', [EmployeeController::class, 'storeLeave'])->name('employees.leaves.store');
+
+    Route::get('/export/excel', [ExportController::class, 'excel'])->name('export.excel');
+    Route::get('/export/pdf', [ExportController::class, 'pdf'])->name('export.pdf');
 });

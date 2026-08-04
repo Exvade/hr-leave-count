@@ -129,7 +129,7 @@
         </div>
     </header>
 
-    <main class="flex-grow relative z-10 w-full py-10">
+    <main class="flex-grow relative w-full py-10">
         @yield('content')
     </main>
 

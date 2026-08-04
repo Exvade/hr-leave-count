@@ -15,7 +15,7 @@ class EmployeeController extends Controller
     {
         $search = $request->input('search');
 
-        $employees = Employee::when($search, function ($query) use ($search) {
+        $employees = Employee::with('leaveRecords')->when($search, function ($query) use ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
                     ->orWhere('employee_id', 'like', '%' . $search . '%');
@@ -233,6 +233,32 @@ class EmployeeController extends Controller
             Log::error('Error import rekap cuti: ' . $e->getMessage());
 
             return back()->with('error', 'Gagal mengimpor rekap cuti. Pastikan format Excel sesuai. (' . $e->getMessage() . ')');
+        }
+    }
+
+    public function storeLeave(Request $request, Employee $employee)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'duration' => 'required|integer|min:1',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $employee->leaveRecords()->create([
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'duration' => $request->duration,
+            ]);
+            DB::commit();
+
+            return back()->with('success', 'Riwayat cuti baru berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error store leave: ' . $e->getMessage());
+
+            return back()->with('error', 'Terjadi kesalahan saat menambahkan riwayat cuti.');
         }
     }
 }

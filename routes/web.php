@@ -15,4 +15,5 @@ Route::middleware(['simple.auth'])->group(function () {
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
     Route::post('/employees/import', [EmployeeController::class, 'import'])->name('employees.import');
     Route::post('/employees/import-leaves', [EmployeeController::class, 'importLeaves'])->name('employees.import-leaves');
+    Route::post('/employees/{employee}/leaves', [EmployeeController::class, 'storeLeave'])->name('employees.leaves.store');
 });

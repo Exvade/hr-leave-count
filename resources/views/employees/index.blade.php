@@ -83,8 +83,9 @@
                                 <div class="flex items-center justify-center gap-2">
                                     @php
                                         $details = json_encode($employee->leave_details);
+                                        $history = $employee->leaveRecords->toJson();
                                     @endphp
-                                    <button @click="$dispatch('open-modal', 'detail-modal'); $dispatch('set-detail-employee', { name: '{{ addslashes($employee->name) }}', details: {{ $details }} })" 
+                                    <button @click="$dispatch('open-modal', 'detail-modal'); $dispatch('set-detail-employee', { name: '{{ addslashes($employee->name) }}', details: {{ $details }}, history: {{ $history }} })" 
                                         class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-white hover:bg-blue-500 hover:shadow-md hover:shadow-blue-500/30 transform hover:scale-110 transition-all duration-200" title="Detail Cuti">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                     </button>
@@ -218,10 +219,11 @@
     <x-modal name="edit-modal" maxWidth="md">
         <div class="p-6">
             <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-6">Ubah Data Karyawan</h2>
-            <form :action="'{{ url('employees') }}/' + editId" method="POST">
+            
+            <form :action="'{{ url('employees') }}/' + editId" method="POST" class="mb-8">
                 @csrf
                 @method('PUT')
-                <div class="space-y-4 mb-6">
+                <div class="space-y-4 mb-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Lengkap</label>
                         <input type="text" name="name" x-model="editName" required 
@@ -235,11 +237,37 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-3">
-                    <button type="button" @click="$dispatch('close-modal', 'edit-modal')" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl transition-colors">
-                        Batal
+                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-xl shadow-md transition-all">
+                        Simpan Profil
                     </button>
-                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md shadow-brand-light/20 transition-all">
-                        Simpan Perubahan
+                </div>
+            </form>
+
+            <hr class="border-gray-200 dark:border-gray-700 mb-6">
+
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambah Riwayat Cuti Manual</h3>
+            <form :action="'{{ url('employees') }}/' + editId + '/leaves'" method="POST">
+                @csrf
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Tgl Mulai</label>
+                        <input type="date" name="start_date" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Tgl Selesai</label>
+                        <input type="date" name="end_date" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Durasi (Hari)</label>
+                        <input type="number" name="duration" min="1" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" @click="$dispatch('close-modal', 'edit-modal')" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl transition-colors">
+                        Tutup
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md transition-all">
+                        Simpan Cuti
                     </button>
                 </div>
             </form>
@@ -248,54 +276,94 @@
 </div>
 
 <!-- Detail Modal -->
-<div x-data="{ detailName: '', d: {} }" 
-     @set-detail-employee.window="detailName = $event.detail.name; d = $event.detail.details;">
-    <x-modal name="detail-modal" maxWidth="md">
-        <div class="p-6">
-            <h2 class="text-xl font-extrabold text-gray-900 dark:text-white mb-2">Rincian Saldo Cuti</h2>
-            <p class="text-sm font-semibold text-brand-light mb-6" x-text="detailName"></p>
-            
-            <div class="space-y-4">
-                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Anniversary Saat Ini</span>
-                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200" x-text="d.anniv_saat_ini"></span>
+<div x-data="{ detailName: '', d: {}, history: [] }" 
+     @set-detail-employee.window="detailName = $event.detail.name; d = $event.detail.details; history = $event.detail.history;">
+    <x-modal name="detail-modal" maxWidth="4xl">
+        <div class="p-6 sm:p-8">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">Rincian Saldo & Riwayat Cuti</h2>
+                    <p class="text-base font-semibold text-brand-light" x-text="detailName"></p>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Hak Periode Sebelumnya</span>
-                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span x-text="d.hak_periode_sebelumnya"></span> Hari</span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Dipakai Periode Sebelumnya</span>
-                    <span class="text-sm font-semibold text-red-500"><span x-text="d.dipakai_periode_sebelumnya"></span> Hari</span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Batas Pengambilan (Hangus)</span>
-                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200" x-text="d.batas_pengambilan"></span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Status Saldo Sebelumnya</span>
-                    <span class="text-xs font-bold px-2 py-1 rounded-full" 
-                        :class="d.status_hangus === 'HANGUS' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'"
-                        x-text="d.status_hangus"></span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Hak Periode Berjalan</span>
-                    <span class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span x-text="d.hak_periode_berjalan"></span> Hari</span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700/50">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Dipakai Periode Berjalan</span>
-                    <span class="text-sm font-semibold text-red-500"><span x-text="d.dipakai_periode_berjalan"></span> Hari</span>
-                </div>
-                <div class="flex justify-between items-center pt-2 mt-4">
-                    <span class="text-base font-bold text-gray-900 dark:text-white">Total Saldo Cuti</span>
-                    <span class="text-lg font-black text-brand-light"><span x-text="d.total_saldo"></span> Hari</span>
-                </div>
+                <button type="button" @click="$dispatch('close-modal', 'detail-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-2">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
             
-            <div class="mt-8 flex justify-end">
-                <button type="button" @click="$dispatch('close-modal', 'detail-modal')" class="px-5 py-2.5 text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark rounded-xl shadow-md transition-all">
-                    Tutup
-                </button>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Kolom Kiri: Kalkulasi Saldo -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700/50 pb-3 mb-4 uppercase tracking-wider">Kalkulasi Saldo Cuti</h3>
+                    <div class="space-y-3 bg-gray-50/50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Anniversary Saat Ini</span>
+                            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200" x-text="d.anniv_saat_ini"></span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Hak Periode Sebelumnya</span>
+                            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span x-text="d.hak_periode_sebelumnya"></span> Hari</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Dipakai Periode Sebelumnya</span>
+                            <span class="text-sm font-semibold text-red-500"><span x-text="d.dipakai_periode_sebelumnya"></span> Hari</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Batas Pengambilan (Hangus)</span>
+                            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200" x-text="d.batas_pengambilan"></span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Status Saldo Sebelumnya</span>
+                            <span class="text-xs font-bold px-2 py-1 rounded-full shadow-sm" 
+                                :class="d.status_hangus === 'HANGUS' ? 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400'"
+                                x-text="d.status_hangus"></span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Hak Periode Berjalan</span>
+                            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span x-text="d.hak_periode_berjalan"></span> Hari</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200/50 dark:border-gray-700/50">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Dipakai Periode Berjalan</span>
+                            <span class="text-sm font-semibold text-red-500"><span x-text="d.dipakai_periode_berjalan"></span> Hari</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 mt-2">
+                            <span class="text-base font-bold text-gray-900 dark:text-white">Total Saldo Cuti</span>
+                            <span class="text-xl font-black text-brand-light bg-brand-light/10 dark:bg-brand-light/20 px-3 py-1 rounded-lg"><span x-text="d.total_saldo"></span> Hari</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Tabel Riwayat -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700/50 pb-3 mb-4 uppercase tracking-wider">Riwayat Pengambilan Cuti</h3>
+                    <div class="max-h-[380px] overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-xl shadow-inner bg-white dark:bg-gray-900">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Mulai</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Selesai</th>
+                                    <th scope="col" class="px-4 py-3 text-center text-xs font-bold text-brand-light uppercase tracking-wider">Durasi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                <template x-if="history.length === 0">
+                                    <tr>
+                                        <td colspan="3" class="px-4 py-8 text-sm text-gray-500 dark:text-gray-400 text-center flex flex-col items-center justify-center">
+                                            <svg class="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                                            <span class="font-medium">Belum ada riwayat cuti</span>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-for="record in history" :key="record.id">
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200" x-text="new Date(record.start_date).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})"></td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200" x-text="new Date(record.end_date).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})"></td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-brand-light text-center bg-brand-light/5"><span x-text="record.duration"></span> Hr</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </x-modal>

@@ -246,20 +246,28 @@
             <hr class="border-gray-200 dark:border-gray-700 mb-6">
 
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambah Riwayat Cuti Manual</h3>
-            <form :action="'{{ url('employees') }}/' + editId + '/leaves'" method="POST">
+            <form :action="'{{ url('employees') }}/' + editId + '/leaves'" method="POST"
+                  x-data="{ startDate: '', endDate: '', duration: '' }"
+                  x-effect="if (startDate && endDate) {
+                      let s = new Date(startDate);
+                      let e = new Date(endDate);
+                      if (e >= s) {
+                          duration = Math.floor((e - s) / (1000 * 60 * 60 * 24)) + 1;
+                      }
+                  }">
                 @csrf
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div>
                         <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Tgl Mulai</label>
-                        <input type="date" name="start_date" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
+                        <input type="date" name="start_date" x-model="startDate" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Tgl Selesai</label>
-                        <input type="date" name="end_date" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
+                        <input type="date" name="end_date" x-model="endDate" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
                     </div>
                     <div class="col-span-2">
                         <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Durasi (Hari)</label>
-                        <input type="number" name="duration" min="1" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
+                        <input type="number" name="duration" x-model="duration" min="1" required class="w-full py-2 px-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-brand-light rounded-lg transition-all outline-none dark:text-white text-sm" />
                     </div>
                 </div>
                 <div class="flex justify-end gap-3">

@@ -21,7 +21,7 @@ class Employee extends BaseModel
 
     public function leaveRecords()
     {
-        return $this->hasMany(LeaveRecord::class);
+        return $this->hasMany(LeaveRecord::class)->orderBy('start_date', 'desc');
     }
 
     public function getLeaveTakenAttribute(): int

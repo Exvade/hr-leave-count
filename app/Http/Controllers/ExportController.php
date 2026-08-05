@@ -35,48 +35,56 @@ class ExportController extends Controller
         $exportData = collect();
 
         foreach ($employees as $index => $emp) {
+            $details = $emp->leave_details;
             $exportData->push([
-                'No' => $index + 1,
+                'NO' => $index + 1,
+                'DEPARTEMEN' => $emp->position,
                 'NIK' => $emp->employee_id,
-                'Nama Lengkap' => $emp->name,
-                'Departemen / Jabatan' => $emp->position,
-                'Tgl Bergabung' => $emp->join_date->format('d M Y'),
-                'Hak Cuti' => $emp->leave_quota,
-                'Terpakai' => $emp->leave_taken,
-                'Sisa Cuti' => $emp->remaining_leave,
+                'NAMA' => $emp->name,
+                'TGL MASUK' => $emp->join_date->format('d M Y'),
+                'ANNIV SAAT INI' => $details['anniv_saat_ini'],
+                'ANNIV SEBELUMNYA' => $details['anniv_sebelumnya'],
+                'HAK PERIODE SEBELUMNYA' => $details['hak_periode_sebelumnya'],
+                'DIPAKAI PERIODE SEBELUMNYA' => $details['dipakai_periode_sebelumnya'],
+                'SISA SALDO PERIODE SEBELUMNYA' => $details['sisa_periode_sebelumnya'],
+                'BATAS PENGAMBILAN' => $details['batas_pengambilan'],
+                'STATUS' => $details['status_hangus'],
+                'HAK PERIODE BERJALAN' => $details['hak_periode_berjalan'],
+                'DIPAKAI PERIODE BERJALAN' => $details['dipakai_periode_berjalan'],
+                'SALDO PERIODE BERJALAN' => $details['sisa_periode_berjalan'],
+                'TOTAL SALDO' => $details['total_saldo'],
             ]);
         }
 
+        // Template Kosong untuk Signature Spacing
+        $emptyRow = [
+            'NO' => '', 'DEPARTEMEN' => '', 'NIK' => '', 'NAMA' => '', 'TGL MASUK' => '',
+            'ANNIV SAAT INI' => '', 'ANNIV SEBELUMNYA' => '', 'HAK PERIODE SEBELUMNYA' => '',
+            'DIPAKAI PERIODE SEBELUMNYA' => '', 'SISA SALDO PERIODE SEBELUMNYA' => '',
+            'BATAS PENGAMBILAN' => '', 'STATUS' => '', 'HAK PERIODE BERJALAN' => '',
+            'DIPAKAI PERIODE BERJALAN' => '', 'SALDO PERIODE BERJALAN' => '', 'TOTAL SALDO' => '',
+        ];
+
         // Tambahkan baris kosong untuk jarak
-        $exportData->push(['No' => '', 'NIK' => '', 'Nama Lengkap' => '', 'Departemen / Jabatan' => '', 'Tgl Bergabung' => '', 'Hak Cuti' => '', 'Terpakai' => '', 'Sisa Cuti' => '']);
-        $exportData->push(['No' => '', 'NIK' => '', 'Nama Lengkap' => '', 'Departemen / Jabatan' => '', 'Tgl Bergabung' => '', 'Hak Cuti' => '', 'Terpakai' => '', 'Sisa Cuti' => '']);
+        $exportData->push($emptyRow);
+        $exportData->push($emptyRow);
 
         // Tambahkan baris penandatangan
-        $exportData->push([
-            'No' => '',
-            'NIK' => 'Direkap,',
-            'Nama Lengkap' => '',
-            'Departemen / Jabatan' => 'Diperiksa,',
-            'Tgl Bergabung' => '',
-            'Hak Cuti' => '',
-            'Terpakai' => 'Diketahui,',
-            'Sisa Cuti' => '',
-        ]);
+        $sigRow1 = $emptyRow;
+        $sigRow1['NIK'] = 'Direkap,';
+        $sigRow1['TGL MASUK'] = 'Diperiksa,';
+        $sigRow1['BATAS PENGAMBILAN'] = 'Diketahui,';
+        $exportData->push($sigRow1);
 
-        $exportData->push(['No' => '', 'NIK' => '', 'Nama Lengkap' => '', 'Departemen / Jabatan' => '', 'Tgl Bergabung' => '', 'Hak Cuti' => '', 'Terpakai' => '', 'Sisa Cuti' => '']);
-        $exportData->push(['No' => '', 'NIK' => '', 'Nama Lengkap' => '', 'Departemen / Jabatan' => '', 'Tgl Bergabung' => '', 'Hak Cuti' => '', 'Terpakai' => '', 'Sisa Cuti' => '']);
-        $exportData->push(['No' => '', 'NIK' => '', 'Nama Lengkap' => '', 'Departemen / Jabatan' => '', 'Tgl Bergabung' => '', 'Hak Cuti' => '', 'Terpakai' => '', 'Sisa Cuti' => '']);
+        $exportData->push($emptyRow);
+        $exportData->push($emptyRow);
+        $exportData->push($emptyRow);
 
-        $exportData->push([
-            'No' => '',
-            'NIK' => 'Wisnu Aryo Novanto',
-            'Nama Lengkap' => '',
-            'Departemen / Jabatan' => 'Anto Permana Sidik',
-            'Tgl Bergabung' => '',
-            'Hak Cuti' => '',
-            'Terpakai' => 'Supriyanto',
-            'Sisa Cuti' => '',
-        ]);
+        $sigRow2 = $emptyRow;
+        $sigRow2['NIK'] = 'Wisnu Aryo Novanto';
+        $sigRow2['TGL MASUK'] = 'Anto Permana Sidik';
+        $sigRow2['BATAS PENGAMBILAN'] = 'Supriyanto';
+        $exportData->push($sigRow2);
 
         return (new FastExcel($exportData))->download('Data_Karyawan_Cuti.xlsx');
     }

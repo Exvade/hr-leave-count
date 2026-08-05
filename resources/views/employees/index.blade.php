@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col gap-8" x-data="employeeSearch">
     <!-- Top Action Bar -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-50">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-40">
         <div>
             <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Daftar Karyawan</h1>
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Kelola kuota cuti tahunan dan riwayat pengambilan cuti seluruh karyawan.</p>
@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="w-full sm:w-64 relative">
-                    <x-select x-model="department" @change="search">
+                    <x-select x-model="department">
                         <option value="">Semua Departemen</option>
                         @foreach($positions as $pos)
                             <option value="{{ $pos }}">{{ $pos }}</option>
@@ -411,6 +411,11 @@
             query: '{{ request('search') }}',
             department: '{{ request('department') }}',
             loading: false,
+            init() {
+                this.$watch('department', () => {
+                    this.search();
+                });
+            },
             search() {
                 this.loading = true;
                 let url = new URL(window.location.href);

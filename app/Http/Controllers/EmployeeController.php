@@ -13,8 +13,8 @@ class EmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
-        $department = $request->input('department');
+        $search = trim((string) $request->input('search'));
+        $department = trim((string) $request->input('department'));
 
         $employees = Employee::with('leaveRecords')
             ->when($search, function ($query) use ($search) {
@@ -42,14 +42,22 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        $employeeId = trim((string) $request->employee_id);
+        $existing = Employee::withTrashed()->where('employee_id', $employeeId)->first();
+
+        if ($existing && ! $existing->trashed()) {
+            return back()->withErrors([
+                'employee_id' => 'ID Karyawan (EMPL.ID) sudah terdaftar dalam sistem.',
+            ])->withInput();
+        }
+
         $request->validate([
-            'employee_id' => 'required|string|max:50|unique:employees,employee_id',
+            'employee_id' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'join_date' => 'required|date',
         ], [
             'employee_id.required' => 'ID Karyawan (EMPL.ID) wajib diisi.',
-            'employee_id.unique' => 'ID Karyawan (EMPL.ID) sudah terdaftar dalam sistem.',
             'name.required' => 'Nama lengkap wajib diisi.',
             'position.required' => 'Jabatan wajib diisi.',
             'join_date.required' => 'Tanggal bergabung wajib diisi.',
@@ -58,12 +66,23 @@ class EmployeeController extends Controller
 
         try {
             DB::beginTransaction();
-            Employee::create([
-                'employee_id' => $request->employee_id,
-                'name' => $request->name,
-                'position' => $request->position,
-                'join_date' => $request->join_date,
-            ]);
+
+            if ($existing && $existing->trashed()) {
+                $existing->restore();
+                $existing->update([
+                    'name' => $request->name,
+                    'position' => $request->position,
+                    'join_date' => $request->join_date,
+                ]);
+            } else {
+                Employee::create([
+                    'employee_id' => $employeeId,
+                    'name' => $request->name,
+                    'position' => $request->position,
+                    'join_date' => $request->join_date,
+                ]);
+            }
+
             DB::commit();
 
             return back()->with('success', 'Karyawan baru berhasil ditambahkan.');
@@ -150,14 +169,24 @@ class EmployeeController extends Controller
                     continue;
                 }
 
-                Employee::updateOrCreate(
-                    ['employee_id' => $employeeId],
-                    [
+                $emp = Employee::withTrashed()->where('employee_id', $employeeId)->first();
+                if ($emp) {
+                    if ($emp->trashed()) {
+                        $emp->restore();
+                    }
+                    $emp->update([
                         'name' => $row[2],
                         'position' => $row[3],
                         'join_date' => $joinDate,
-                    ]
-                );
+                    ]);
+                } else {
+                    Employee::create([
+                        'employee_id' => $employeeId,
+                        'name' => $row[2],
+                        'position' => $row[3],
+                        'join_date' => $joinDate,
+                    ]);
+                }
                 $importedCount++;
             }
 

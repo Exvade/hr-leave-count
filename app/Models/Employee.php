@@ -97,7 +97,9 @@ class Employee extends BaseModel
 
         $dipakaiPeriodeSebelumnya = $dipakaiLama + $dipakaiDariLama;
         $sisaPeriodeSebelumnya = $hakPeriodeSebelumnya - $dipakaiPeriodeSebelumnya;
-        $sisaAktifPeriodeSebelumnya = $isHangus ? 0 : max(0, $sisaPeriodeSebelumnya);
+        $sisaAktifPeriodeSebelumnya = $sisaPeriodeSebelumnya < 0
+            ? $sisaPeriodeSebelumnya
+            : ($isHangus ? 0 : $sisaPeriodeSebelumnya);
 
         $hakPeriodeBerjalan = $yearsCompleted == 0 ? 0 : $monthsInCurrentYear;
         $dipakaiPeriodeBerjalan = $dipakaiDariBaru;

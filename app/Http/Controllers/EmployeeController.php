@@ -47,6 +47,13 @@ class EmployeeController extends Controller
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'join_date' => 'required|date',
+        ], [
+            'employee_id.required' => 'ID Karyawan (EMPL.ID) wajib diisi.',
+            'employee_id.unique' => 'ID Karyawan (EMPL.ID) sudah terdaftar dalam sistem.',
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'position.required' => 'Jabatan wajib diisi.',
+            'join_date.required' => 'Tanggal bergabung wajib diisi.',
+            'join_date.date' => 'Format tanggal bergabung tidak valid.',
         ]);
 
         try {
@@ -96,12 +103,16 @@ class EmployeeController extends Controller
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
+        ], [
+            'file.required' => 'File Excel wajib diunggah.',
+            'file.mimes' => 'Format file harus berupa file Excel (.xlsx atau .xls).',
         ]);
 
         try {
             DB::beginTransaction();
 
             $collection = (new FastExcel)->withoutHeaders()->import($request->file('file'));
+            $importedCount = 0;
 
             foreach ($collection as $row) {
                 // Ensure array has enough columns (Index 1: EMPL.ID, 2: Nama, 3: Jabatan, 4: Tanggal)
@@ -147,11 +158,16 @@ class EmployeeController extends Controller
                         'join_date' => $joinDate,
                     ]
                 );
+                $importedCount++;
             }
 
             DB::commit();
 
-            return back()->with('success', 'Data karyawan berhasil diimpor.');
+            if ($importedCount === 0) {
+                return back()->with('error', 'Tidak ada data karyawan yang berhasil diimpor. Pastikan format kolom file Excel sesuai.');
+            }
+
+            return back()->with('success', "$importedCount data karyawan berhasil diimpor.");
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error import excel: ' . $e->getMessage());
@@ -180,12 +196,16 @@ class EmployeeController extends Controller
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
+        ], [
+            'file.required' => 'File Excel rekap cuti wajib diunggah.',
+            'file.mimes' => 'Format file harus berupa file Excel (.xlsx atau .xls).',
         ]);
 
         try {
             DB::beginTransaction();
 
             $collection = (new FastExcel)->withoutHeaders()->import($request->file('file'));
+            $importedCount = 0;
 
             foreach ($collection as $index => $row) {
                 // NIK index 1, Dari Tanggal index 3, Sampai Tanggal index 4, Durasi index 5
@@ -234,12 +254,17 @@ class EmployeeController extends Controller
                         'end_date' => $endDate,
                         'duration' => (int) $durasi,
                     ]);
+                    $importedCount++;
                 }
             }
 
             DB::commit();
 
-            return back()->with('success', 'Riwayat cuti berhasil diimpor.');
+            if ($importedCount === 0) {
+                return back()->with('error', 'Tidak ada riwayat cuti yang berhasil diimpor. Pastikan NIK terdaftar dan format kolom file Excel sesuai.');
+            }
+
+            return back()->with('success', "$importedCount riwayat cuti berhasil diimpor.");
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error import rekap cuti: ' . $e->getMessage());
@@ -254,6 +279,14 @@ class EmployeeController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'duration' => 'required|integer|min:1',
+        ], [
+            'start_date.required' => 'Tanggal mulai cuti wajib diisi.',
+            'start_date.date' => 'Format tanggal mulai cuti tidak valid.',
+            'end_date.required' => 'Tanggal selesai cuti wajib diisi.',
+            'end_date.date' => 'Format tanggal selesai cuti tidak valid.',
+            'end_date.after_or_equal' => 'Tanggal selesai cuti harus sama atau setelah tanggal mulai.',
+            'duration.required' => 'Durasi cuti wajib diisi.',
+            'duration.min' => 'Durasi cuti minimal 1 hari.',
         ]);
 
         try {
